@@ -85,12 +85,27 @@ describe("parseAuditPageParams", () => {
 		});
 	});
 
-	it("round-trips through toAuditSearchParams", () => {
-		const result = parse("actor=member_admin&limit=5&cursor=abc");
+	it.each([
+		"actor=member_admin&limit=5&cursor=abc",
+		"action=wallet.send&from=2026-01-01&to=2026-01-02T00:00:00Z",
+		"limit=1",
+	])("round-trips through toAuditSearchParams: %s", (query) => {
+		const result = parse(query);
 		if (!result.ok) throw new Error("expected ok");
 		expect(parseAuditPageParams(toAuditSearchParams(result.query))).toEqual(
 			result,
 		);
+	});
+
+	it("does not serialize an empty cursor", () => {
+		const params = toAuditSearchParams({
+			filters: {},
+			cursor: "",
+			limit: 50,
+		});
+
+		expect(params.has("cursor")).toBe(false);
+		expect(params.toString()).toBe("limit=50");
 	});
 });
 

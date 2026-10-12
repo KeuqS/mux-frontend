@@ -141,7 +141,9 @@ export function toAuditSearchParams(query: AuditPageQuery): URLSearchParams {
 		const value = query.filters[name];
 		if (value !== undefined) params.set(name, value);
 	}
-	if (query.cursor !== null) params.set("cursor", query.cursor);
+	if (query.cursor !== null && query.cursor.length > 0) {
+		params.set("cursor", query.cursor);
+	}
 	params.set("limit", String(query.limit));
 	return params;
 }
